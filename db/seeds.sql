@@ -1,16 +1,15 @@
-INSERT INTO department(name)
+INSERT INTO department (d_name)
 VALUES ("Software Design"),
        ("Human Resources"),
-       ("Management");
+       ("Project Management");
 
+INSERT INTO e_role (title, salary, department_id)
+VALUES ("Intern", 30000, 1),
+       ("Manager", 150000, 2),
+       ("Engineer", 100000, 3);
 
-INSERT INTO e_role (title, salary)
-VALUES ("Intern", 30,000),
-       ("Manager", 150,000),
-       ("Engineer", 100,000);
-
-INSERT INTO employee (first_name, last_name)
-VALUES ("Patrick", "Star"),
-       ("Eugiene", "Krabs"),
-       ("Spongebob", "Squarepants");
+INSERT INTO employee (first_name, last_name, manager_id, role_id)
+VALUES ("Patrick", "Star", null, 1),
+       ("Eugiene", "Krabs", 1, 2), 
+       ("Spongebob", "Squarepants", null, 3);
      
