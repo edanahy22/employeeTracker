@@ -5,156 +5,218 @@ require('console.table');
 // Connect to database
 const db = mysql2.createConnection(
     {
-      host: 'localhost',
-      // MySQL username,
-      user: 'root',
-      // TODO: Add MySQL password here
-      password: 'Finnegan23',
-      database: 'employee_db'
+        host: 'localhost',
+        // MySQL username,
+        user: 'root',
+        // TODO: Add MySQL password here
+        password: 'Finnegan23',
+        database: 'employee_db'
     },
     console.log(`Connected to the employee_db database.`)
-  );
+);
 
-const compileCompany= () => {
+const compileCompany = () => {
 
 }
 
 const viewEmployees = () => {
     console.log("here");
     const sql = `SELECT * FROM employee`;
-    db.query(sql, function(err, result) {
-      if (err) {
-        console.err(err)
-      }
-      console.table(result);
-      return result;
+    db.query(sql, function (err, result) {
+        if (err) {
+            console.err(err)
+        }
+        console.table(result);
+        createCompany();
+        return result;
     })
-   
+
 }
 
 const addEmployee = () => {
     inquirer
-      .prompt([
-        {
-            type:'input',
-            name: 'first_name',
-            message: "What is your employee's first name?",
-    
-        },
-        {
-            type:'input',
-            name: 'last_name',
-            message: "What is your employee's last name?",
-    
-        },
-        {
-            type:'list',
-            name: 'role_id',
-            message: "What is your employee's role?",
-            choices:[{name: "Manager", value: 3}, {name:"Human Resources Specialist", value: 2}, {name: "Engineer", value: 1}]
-    
-        },
-        {
-            type:'list',
-            name: 'manager_id',
-            message: "Who is the employee's manager?",
-            choices:[{name: "Krabs", value: 3}]
-    
-        }, 
-    ])
-    .then(results => {
-        console.log(results)
-        const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+        .prompt([
+            {
+                type: 'input',
+                name: 'first_name',
+                message: "What is your employee's first name?",
+
+            },
+            {
+                type: 'input',
+                name: 'last_name',
+                message: "What is your employee's last name?",
+
+            },
+            {
+                type: 'list',
+                name: 'role_id',
+                message: "What is your employee's role?",
+                choices: [{ name: "Manager", value: 3 }, { name: "Human Resources Specialist", value: 2 }, { name: "Engineer", value: 1 }]
+
+            },
+            {
+                type: 'list',
+                name: 'manager_id',
+                message: "Who is the employee's manager?",
+                choices: [{ name: "Krabs", value: 3 }]
+
+            },
+        ])
+        .then(results => {
+            console.log(results)
+            const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
     VALUES (?, ?, ?, ?)`;
-    const params = [results.first_name, results.last_name, results.role_id, results.manager_id];
-    db.query(sql, params, (err, result) => {
-      if (err) {
-        console.err(err)
-      }
-      console.log(result);
-    //   return result;
-    });
-    })     
-    
-    
+            const params = [results.first_name, results.last_name, results.role_id, results.manager_id];
+            db.query(sql, params, (err, result) => {
+                if (err) {
+                    console.err(err)
+                }
+                console.table(result);
+                createCompany();
+                return result;
+            });
+        })
+
+
 }
 
 const updateEmployee = () => {
 
 }
 
-const viewRoles =  () => {
+const viewRoles = () => {
     const sql = `SELECT * FROM e_role`;
-    db.query(sql, function(err, result) {
-      if (err) {
-        console.err(err)
-      }
-      console.table(result);
-      return result;
+    db.query(sql, function (err, result) {
+        if (err) {
+            console.err(err)
+        }
+        console.table(result);
+        createCompany();
+        return result;
     })
-  
+    
 }
 
 const addRole = () => {
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                name: 'title',
+                message: "What is the title of the role?",
 
+            },
+            {
+                type: 'input',
+                name: 'salary',
+                message: "What is the salary for this role?",
+
+            },
+            {
+                type: 'list',
+                name: 'department_id',
+                message: "Which department does this role belong to?",
+                choices: [{ name: "Management", value: 3 }, { name: "Human Resources", value: 2 }, { name: "Software Design", value: 1 }]
+
+            },
+        ])
+
+        .then(results => {
+            console.log(results)
+            const sql = `INSERT INTO e_role (title, salary, department_id)
+    VALUES (?, ?, ?)`;
+            const params = [results.title, results.salary, results.department_id];
+            db.query(sql, params, (err, result) => {
+                if (err) {
+                    console.err(err)
+                }
+                console.table(result);
+                createCompany();
+                return result;
+            });
+        })
 }
 
 const viewDepartments = () => {
     const sql = `SELECT * FROM department`;
     db.query(sql, (err, result) => {
-      if (err) {
-        console.err(err)
-      }
-      console.log(result);
-    //   return result;
+        if (err) {
+            console.err(err)
+        }
+        console.table(result);
+        createCompany();
+        return result;
     });
 }
 
 const addDepartment = () => {
+    inquirer
+    .prompt([
+        {
+            type: 'input',
+            name: 'd_name',
+            message: "What is the name of the department?",
 
+        }
+    ])
+
+    .then(results => {
+        console.log(results)
+        const sql = `INSERT INTO department (d_name) VALUES (?)`;
+        const params = [results.d_name];
+        db.query(sql, params, (err, result) => {
+            if (err) {
+                console.error(err)
+            }
+            console.table(result);
+            createCompany();
+            return result;
+        });
+    })
 }
 
 const createCompany = () => {
     inquirer
-    .prompt([
-        {
-            type:'list',
-            name: 'menu',
-            message: 'What would you like to do?',
-            choices: ['View Employees', 'Add Employee', 'Update Employee', 'View Roles', 'Add Role', 'View Departments', 'Add Department', 'Done']
+        .prompt([
+            {
+                type: 'list',
+                name: 'menu',
+                message: 'What would you like to do?',
+                choices: ['View Employees', 'Add Employee', 'Update Employee', 'View Roles', 'Add Role', 'View Departments', 'Add Department', 'Done']
+            }
+        ])
+        .then((response) => {
+            console.log(response);
+            switch (response.menu) {
+                case 'View Employees':
+                    viewEmployees();
+                    break;
+                case 'Add Employee':
+                    addEmployee();
+                    break;
+                case 'Update Employee':
+                    updateEmployee();
+                    break;
+                case 'View Roles':
+                    viewRoles();
+                    break;
+                case 'Add Role':
+                    addRole();
+                    break;
+                case 'View Departments':
+                    viewDepartments();
+                    break;
+                case 'Add Department':
+                    addDepartment();
+                default:
+                    compileCompany();
+            }
+        })
+        .catch((err) => {
+            console.error(err);
         }
-    ])
-    .then((response) => {
-        console.log(response);
-        switch (response.menu) {
-            case 'View Employees':
-                viewEmployees();
-                break;
-            case 'Add Employee':
-                addEmployee();
-                break;
-            case 'Update Employee':
-                updateEmployee();
-                break;
-            case 'View Roles':
-                viewRoles();
-                break;
-            case 'Add Role':
-                addRole();
-                break;
-            case 'View Departments':
-                viewDepartments();
-                break;
-            case 'Add Department':
-                addDepartment();
-            default:
-                compileCompany();
-        }
-    })
-    .catch((err) => {
-        console.error(err);
-    }
-    );
+        );
 }
 
 createCompany();
