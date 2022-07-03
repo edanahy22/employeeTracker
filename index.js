@@ -1,6 +1,6 @@
 const inquirer = require('inquirer');
 const mysql2 = require('mysql2');
-// const conslTable = require('console-table');
+require('console.table');
 
 // Connect to database
 const db = mysql2.createConnection(
@@ -20,25 +20,63 @@ const compileCompany= () => {
 }
 
 const viewEmployees = () => {
+    console.log("here");
     const sql = `SELECT * FROM employee`;
-    db.query(sql, (err, result) => {
+    db.query(sql, function(err, result) {
       if (err) {
         console.err(err)
       }
-      console.log(result);
+      console.table(result);
       return result;
-    });
+    })
+   
 }
 
 const addEmployee = () => {
-    const sql = `SELECT * FROM employee`;
-    db.query(sql, (err, result) => {
+    inquirer
+      .prompt([
+        {
+            type:'input',
+            name: 'first_name',
+            message: "What is your employee's first name?",
+    
+        },
+        {
+            type:'input',
+            name: 'last_name',
+            message: "What is your employee's last name?",
+    
+        },
+        {
+            type:'list',
+            name: 'role_id',
+            message: "What is your employee's role?",
+            choices:[{name: "Manager", value: 3}, {name:"Human Resources Specialist", value: 2}, {name: "Engineer", value: 1}]
+    
+        },
+        {
+            type:'list',
+            name: 'manager_id',
+            message: "Who is the employee's manager?",
+            choices:[{name: "Krabs", value: 3}]
+    
+        }, 
+    ])
+    .then(results => {
+        console.log(results)
+        const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+    VALUES (?, ?, ?, ?)`;
+    const params = [results.first_name, results.last_name, results.role_id, results.manager_id];
+    db.query(sql, params, (err, result) => {
       if (err) {
         console.err(err)
       }
       console.log(result);
-      return result;
+    //   return result;
     });
+    })     
+    
+    
 }
 
 const updateEmployee = () => {
@@ -47,13 +85,14 @@ const updateEmployee = () => {
 
 const viewRoles =  () => {
     const sql = `SELECT * FROM e_role`;
-    db.query(sql, (err, result) => {
+    db.query(sql, function(err, result) {
       if (err) {
         console.err(err)
       }
-      console.log(result);
+      console.table(result);
       return result;
-    });
+    })
+  
 }
 
 const addRole = () => {
@@ -67,7 +106,7 @@ const viewDepartments = () => {
         console.err(err)
       }
       console.log(result);
-      return result;
+    //   return result;
     });
 }
 
@@ -87,7 +126,7 @@ const createCompany = () => {
     ])
     .then((response) => {
         console.log(response);
-        switch (response.action) {
+        switch (response.menu) {
             case 'View Employees':
                 viewEmployees();
                 break;

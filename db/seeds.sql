@@ -9,8 +9,8 @@ VALUES ("Engineer", 30000, 1),
        ("Manager", 100000, 3);
 
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
-VALUES ("Spongebob", "Squarepants", null, 1),
-       ("Squidward", "Tenticles", null, 2),
-       ("Eugiene", "Krabs", 1, 3); 
+VALUES ("Spongebob", "Squarepants", 3, 1),
+       ("Squidward", "Tenticles", 3, 2),
+       ("Eugiene", "Krabs", null, 3); 
        
      
