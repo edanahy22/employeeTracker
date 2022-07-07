@@ -15,6 +15,36 @@ const db = mysql2.createConnection(
     console.log(`Connected to the employee_db database.`)
 );
 
+let employeeArr = [];
+let roleArr = [];
+let departmentArr = [];
+
+const departmentList = () => {
+    const sql = `SELECT * FROM department`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.err(err)
+        }
+        departmentArr = result.map(res => ({
+            value: res.id, name: res.d_name
+        }));
+        return result;
+    });
+}
+
+const roleList = () => {
+    const sql = `SELECT * FROM e_role`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.err(err)
+        }
+        roleArr = result.map(res => ({
+            value: res.id, name: res.title
+        }));
+        return result;
+    });
+}
+
 const compileCompany = () => {
 
 }
@@ -52,7 +82,8 @@ const addEmployee = () => {
                 type: 'list',
                 name: 'role_id',
                 message: "What is your employee's role?",
-                choices: [{ name: "Manager", value: 3 }, { name: "Human Resources Specialist", value: 2 }, { name: "Engineer", value: 1 }]
+                choices: roleArr
+                // choices: [{ name: "Manager", value: 3 }, { name: "Human Resources Specialist", value: 2 }, { name: "Engineer", value: 1 }]
 
             },
             {
@@ -82,7 +113,33 @@ const addEmployee = () => {
 }
 
 const updateEmployee = () => {
+    inquirer
+        .prompt([
+            {
+                type: 'list',
+                name: 'update',
+                message: "Which employee would you like to update?",
+                choices: employeeArr
 
+            }
+
+        ])
+    // const sql =  `UPDATE employee SET first_name = ? WHERE id = ?`;
+    // const params = 
+    // db.query(sql, params, (err, result) => {
+    //     if (err) {
+    //       res.status(400).json({ error: err.message });
+    //     } else if (!result.affectedRows) {
+    //       res.json({
+    //         message: 'Movie not found'
+    //       });
+    //     } else {
+    //       res.json({
+    //         message: 'success',
+    //         data: req.body,
+    //         changes: result.affectedRows
+    //       });
+    //     }}
 }
 
 const viewRoles = () => {
@@ -92,6 +149,9 @@ const viewRoles = () => {
             console.err(err)
         }
         console.table(result);
+        roleArr = result.map(res => ({
+            value: res.id, name: res.title
+        }));
         createCompany();
         return result;
     })
@@ -117,7 +177,8 @@ const addRole = () => {
                 type: 'list',
                 name: 'department_id',
                 message: "Which department does this role belong to?",
-                choices: [{ name: "Management", value: 3 }, { name: "Human Resources", value: 2 }, { name: "Software Design", value: 1 }]
+                choices: departmentArr
+                // choices: [{ name: "Management", value: 3 }, { name: "Human Resources", value: 2 }, { name: "Software Design", value: 1 }]
 
             },
         ])
@@ -132,6 +193,9 @@ const addRole = () => {
                     console.err(err)
                 }
                 console.table(result);
+                roleArr = result.map(res => ({
+                    value: res.id, name: res.title
+                }));
                 createCompany();
                 return result;
             });
@@ -145,6 +209,9 @@ const viewDepartments = () => {
             console.err(err)
         }
         console.table(result);
+        departmentArr = result.map(res => ({
+            value: res.id, name: res.d_name
+        }));
         createCompany();
         return result;
     });
@@ -171,12 +238,17 @@ const addDepartment = () => {
             }
             console.table(result);
             createCompany();
+            departmentArr = result.map(res => ({
+                value: res.id, name: res.d_name
+            }));
             return result;
         });
     })
 }
 
 const createCompany = () => {
+    departmentList();
+    roleList();
     inquirer
         .prompt([
             {
