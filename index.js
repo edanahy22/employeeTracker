@@ -45,10 +45,6 @@ const roleList = () => {
     });
 }
 
-const compileCompany = () => {
-
-}
-
 const viewEmployees = () => {
     console.log("here");
     const sql = `SELECT * FROM employee`;
@@ -281,8 +277,9 @@ const createCompany = () => {
                     break;
                 case 'Add Department':
                     addDepartment();
+                    break;
                 default:
-                    compileCompany();
+                    db.end();
             }
         })
         .catch((err) => {
