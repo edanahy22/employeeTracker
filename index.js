@@ -19,11 +19,24 @@ let employeeArr = [];
 let roleArr = [];
 let departmentArr = [];
 
+const employeeList = () => {
+    const sql = `SELECT * FROM employee`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error(err)
+        }
+        employeeArr = result.map(res => ({
+            value: res.id, name: res.last_name
+        }));
+        return result;
+    });
+}
+
 const departmentList = () => {
     const sql = `SELECT * FROM department`;
     db.query(sql, (err, result) => {
         if (err) {
-            console.err(err)
+            console.error(err)
         }
         departmentArr = result.map(res => ({
             value: res.id, name: res.d_name
@@ -36,7 +49,7 @@ const roleList = () => {
     const sql = `SELECT * FROM e_role`;
     db.query(sql, (err, result) => {
         if (err) {
-            console.err(err)
+            console.error(err)
         }
         roleArr = result.map(res => ({
             value: res.id, name: res.title
@@ -47,10 +60,10 @@ const roleList = () => {
 
 const viewEmployees = () => {
     console.log("here");
-    const sql = `SELECT * FROM employee`;
+    const sql = `Select employee.id, employee.first_name, employee.last_name, e_role.title, employee.role_id, department.d_name, e_role.salary, concat(manager.first_name," ",manager.last_name) AS manager from employee left join e_role on employee.role_id = e_role.id left join department on e_role.department_id = department.id left join employee manager on manager.id = employee.manager_id; `;
     db.query(sql, function (err, result) {
         if (err) {
-            console.err(err)
+            console.error(err)
         }
         console.table(result);
         createCompany();
@@ -97,7 +110,7 @@ const addEmployee = () => {
             const params = [results.first_name, results.last_name, results.role_id, results.manager_id];
             db.query(sql, params, (err, result) => {
                 if (err) {
-                    console.err(err)
+                    console.error(err)
                 }
                 console.table(result);
                 createCompany();
@@ -113,36 +126,41 @@ const updateEmployee = () => {
         .prompt([
             {
                 type: 'list',
-                name: 'update',
-                message: "Which employee would you like to update?",
+                name: 'employee',
+                message: "Which employee role would you like to update?",
                 choices: employeeArr
 
-            }
+            },
+            {
+                type: 'list',
+                name: 'update_role',
+                message: "Which role would you like to change it to?",
+                choices: roleArr
 
+            }
         ])
-    // const sql =  `UPDATE employee SET first_name = ? WHERE id = ?`;
-    // const params = 
-    // db.query(sql, params, (err, result) => {
-    //     if (err) {
-    //       res.status(400).json({ error: err.message });
-    //     } else if (!result.affectedRows) {
-    //       res.json({
-    //         message: 'Movie not found'
-    //       });
-    //     } else {
-    //       res.json({
-    //         message: 'success',
-    //         data: req.body,
-    //         changes: result.affectedRows
-    //       });
-    //     }}
+        .then(results => {
+            const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
+            const params = [results.update_role, results.employee];
+            db.query(sql, params, (err, result) => {
+                if (err) {
+                    console.error(err)
+                } else {
+                    console.log('success')
+                }
+                console.table(result);
+                createCompany();
+                return result; 
+            }
+            )
+        })
 }
 
 const viewRoles = () => {
     const sql = `SELECT * FROM e_role`;
     db.query(sql, function (err, result) {
         if (err) {
-            console.err(err)
+            console.error(err)
         }
         console.table(result);
         roleArr = result.map(res => ({
@@ -151,7 +169,7 @@ const viewRoles = () => {
         createCompany();
         return result;
     })
-    
+
 }
 
 const addRole = () => {
@@ -186,12 +204,12 @@ const addRole = () => {
             const params = [results.title, results.salary, results.department_id];
             db.query(sql, params, (err, result) => {
                 if (err) {
-                    console.err(err)
+                    console.error(err)
                 }
                 console.table(result);
-                roleArr = result.map(res => ({
-                    value: res.id, name: res.title
-                }));
+                // roleArr = result.map(res => ({
+                //     value: res.id, name: res.title
+                // }));
                 createCompany();
                 return result;
             });
@@ -202,7 +220,7 @@ const viewDepartments = () => {
     const sql = `SELECT * FROM department`;
     db.query(sql, (err, result) => {
         if (err) {
-            console.err(err)
+            console.error(err)
         }
         console.table(result);
         departmentArr = result.map(res => ({
@@ -215,43 +233,44 @@ const viewDepartments = () => {
 
 const addDepartment = () => {
     inquirer
-    .prompt([
-        {
-            type: 'input',
-            name: 'd_name',
-            message: "What is the name of the department?",
+        .prompt([
+            {
+                type: 'input',
+                name: 'd_name',
+                message: "What is the name of the department?",
 
-        }
-    ])
-
-    .then(results => {
-        console.log(results)
-        const sql = `INSERT INTO department (d_name) VALUES (?)`;
-        const params = [results.d_name];
-        db.query(sql, params, (err, result) => {
-            if (err) {
-                console.error(err)
             }
-            console.table(result);
-            createCompany();
-            departmentArr = result.map(res => ({
-                value: res.id, name: res.d_name
-            }));
-            return result;
-        });
-    })
+        ])
+
+        .then(results => {
+            console.log(results)
+            const sql = `INSERT INTO department (d_name) VALUES (?)`;
+            const params = [results.d_name];
+            db.query(sql, params, (err, result) => {
+                if (err) {
+                    console.error(err)
+                }
+                console.table(result);
+                createCompany();
+                // departmentArr = result.map(res => ({
+                //     value: res.id, name: res.d_name
+                // }));
+                return result;
+            });
+        })
 }
 
 const createCompany = () => {
     departmentList();
     roleList();
+    employeeList();
     inquirer
         .prompt([
             {
                 type: 'list',
                 name: 'menu',
                 message: 'What would you like to do?',
-                choices: ['View Employees', 'Add Employee', 'Update Employee', 'View Roles', 'Add Role', 'View Departments', 'Add Department', 'Done']
+                choices: ['View Employees', 'Add Employee', 'Update Employee Role', 'View Roles', 'Add Role', 'View Departments', 'Add Department', 'Done']
             }
         ])
         .then((response) => {
@@ -263,7 +282,7 @@ const createCompany = () => {
                 case 'Add Employee':
                     addEmployee();
                     break;
-                case 'Update Employee':
+                case 'Update Employee Role':
                     updateEmployee();
                     break;
                 case 'View Roles':

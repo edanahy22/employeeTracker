@@ -4,8 +4,8 @@ VALUES ("Software Design"),
        ("Project Management");
 
 INSERT INTO e_role (title, salary, department_id)
-VALUES ("Engineer", 30000, 1),
-       ("Human Resources Specialist", 150000, 2),
+VALUES ("Engineer", 100000, 1),
+       ("Human Resources Specialist", 80000, 2),
        ("Manager", 100000, 3);
 
 INSERT INTO employee (first_name, last_name, manager_id, role_id)
