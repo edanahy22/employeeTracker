@@ -25,9 +25,7 @@ When the user runs the application, they are presented with a menu where they ca
 
 After they have finished managing their employees, the user can select "done" on the main menu and is exited out of the application.
 
-![Screenshot](./images/teamGeneratorScreenShot.png)
-
-[Walk-through Video](https://drive.google.com/file/d/1zRndeY9fq4LA-wgkeefp5ysBYEs9FE5N/view)
+[Walk-through Video](https://drive.google.com/file/d/1mOM37-QW6T0AhCFF59s_RolZcHzxtcL4/view)
 
 ## Development
 This application was developed using javaScript, node, mySQL, Inquirer, and console.table packages. 
