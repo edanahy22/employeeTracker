@@ -2,13 +2,11 @@ const inquirer = require('inquirer');
 const mysql2 = require('mysql2');
 require('console.table');
 
-// Connect to database
+
 const db = mysql2.createConnection(
     {
         host: 'localhost',
-        // MySQL username,
         user: 'root',
-        // TODO: Add MySQL password here
         password: 'Finnegan23',
         database: 'employee_db'
     },
@@ -18,6 +16,7 @@ const db = mysql2.createConnection(
 let employeeArr = [];
 let roleArr = [];
 let departmentArr = [];
+let managerArr = [];
 
 const employeeList = () => {
     const sql = `SELECT * FROM employee`;
@@ -58,9 +57,22 @@ const roleList = () => {
     });
 }
 
+const managerList = () => {
+    const sql = `SELECT * FROM employee WHERE role_id = 3`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error(err)
+        }
+        managerArr = result.map(res => ({
+            value: res.id , name: res.last_name
+        }))
+        return result;
+    })
+}
+
 const viewEmployees = () => {
     console.log("here");
-    const sql = `Select employee.id, employee.first_name, employee.last_name, e_role.title, employee.role_id, department.d_name, e_role.salary, concat(manager.first_name," ",manager.last_name) AS manager from employee left join e_role on employee.role_id = e_role.id left join department on e_role.department_id = department.id left join employee manager on manager.id = employee.manager_id; `;
+    const sql = `Select employee.id, employee.first_name, employee.last_name, e_role.title, employee.role_id, department.d_name, e_role.salary, concat(manager.first_name," ",manager.last_name) AS manager from employee left join e_role on employee.role_id = e_role.id left join department on e_role.department_id = department.id left join employee manager on manager.id = employee.manager_id;`;
     db.query(sql, function (err, result) {
         if (err) {
             console.error(err)
@@ -99,10 +111,12 @@ const addEmployee = () => {
                 type: 'list',
                 name: 'manager_id',
                 message: "Who is the employee's manager?",
-                choices: [{ name: "Krabs", value: 3 }]
+                choices: managerArr,
 
-            },
+            }
+            
         ])
+        
         .then(results => {
             console.log(results)
             const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
@@ -117,7 +131,6 @@ const addEmployee = () => {
                 return result;
             });
         })
-
 
 }
 
@@ -163,9 +176,6 @@ const viewRoles = () => {
             console.error(err)
         }
         console.table(result);
-        roleArr = result.map(res => ({
-            value: res.id, name: res.title
-        }));
         createCompany();
         return result;
     })
@@ -196,7 +206,6 @@ const addRole = () => {
 
             },
         ])
-
         .then(results => {
             console.log(results)
             const sql = `INSERT INTO e_role (title, salary, department_id)
@@ -206,10 +215,7 @@ const addRole = () => {
                 if (err) {
                     console.error(err)
                 }
-                console.table(result);
-                // roleArr = result.map(res => ({
-                //     value: res.id, name: res.title
-                // }));
+                console.table(result);              
                 createCompany();
                 return result;
             });
@@ -223,9 +229,6 @@ const viewDepartments = () => {
             console.error(err)
         }
         console.table(result);
-        departmentArr = result.map(res => ({
-            value: res.id, name: res.d_name
-        }));
         createCompany();
         return result;
     });
@@ -252,18 +255,18 @@ const addDepartment = () => {
                 }
                 console.table(result);
                 createCompany();
-                // departmentArr = result.map(res => ({
-                //     value: res.id, name: res.d_name
-                // }));
                 return result;
             });
         })
 }
 
+
 const createCompany = () => {
     departmentList();
     roleList();
     employeeList();
+    managerList();
+
     inquirer
         .prompt([
             {
